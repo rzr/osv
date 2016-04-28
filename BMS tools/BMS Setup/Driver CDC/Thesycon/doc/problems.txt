@@ -1,0 +1,93 @@
+Thesycon Systemsoftware & Consulting GmbH
+
+CDCACM Driver Package
+
+Known Problems
+
+
+The following list shows problems we have encountered while debugging
+and testing the CDCACM device driver.
+
+Some of the problems described below are caused by bugs or inadequacies
+in the implementation of the operating system's USB driver stack.
+Others can be caused by misbehaving device firmware.
+
+The behavior of the Microsoft USB drivers seems to be different on 
+several computers. Especially, the device driver for the Open Host Controller
+OPENHCI.SYS (e.g. ALi chip sets) does not behave in the same way as
+the driver for the Universal Host Controller UHCD.SYS (Intel chip sets).
+
+In addition, there are differences in the behavior of the operating
+systems Windows 2000, Windows XP and Windows Vista.
+The Power Management features and the behavior seem to be very different
+on various computers. The behavior depends on the implementation of
+the system's BIOS and its ACPI or APM implementation.
+
+We recommend to test the Plug&Play and Power Management features on all
+target platforms you plan to support. Especially, you should do tests all
+three hardware platforms, Open Host Controller, Universal Host Controller
+and Enhanced Host Controller. To test the EHC with a full speed device 
+a USB 2.0 (high speed) hub must be used between the PC and the device. 
+
+
+
+**************************************************************************
+Problem: Driver restarts after standby and hibernate
+
+Operating System: Windows 2000
+Chipset: OHC
+
+Description:
+If the systems returns from standby or hibernate the serial port cannot 
+accessed for approximately 25 seconds. After this period the driver receives
+a device remove event and is loaded again. The handle of the application becomes
+invalid. If the application closes the invalid handle and open the COM port 
+again everything is working well.
+
+Cause:
+It seems that the power management in Windows 2000 and the open host controller
+is not implemented correctly. We have also seen similar problems with USB
+drivers from other vendors. 
+
+Workaround:
+Disable the power management if you are using an OHC on Windows 2000.
+
+
+**************************************************************************
+Problem: Data are changed in the sequence 
+
+Operating System: Windows XP SP1
+Chipset: any
+
+Description:
+On Windows XP SP1 the order of the received data may be changed or an IN
+data stream may stop. The problem occurs randomly with high data rates.
+
+Cause:
+This problem is caused by a misbehavior of the bus driver.
+
+Workaround:
+Configure the buffer count in the INF file to 1 if Windows XP SP1 must be 
+supported.
+
+**************************************************************************
+Problem: Hyperterm stops responding.
+         
+Operating System: Windows 2000, Windows XP, Windows XP X64
+Chipset: any
+
+Description:
+If the Hyperterm program has opened the COM port and the device is removed
+and Hyperterm sends 2 or more characters Hyperterm stops responding if it is 
+disconnected. If the device is removed the driver returns an error code that 
+indicates the application that the request fails because the device is removed.
+But hyperterm ignore this error code and send the pressed character in a endless
+loop. 
+
+Cause:
+Hyperterm does not check the returned status codes in this case.
+
+Workaround:
+Avoid this situation if you are using Hyperterm.
+
+
