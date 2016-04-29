@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html ng-app="circularProgressDemo">
+    <head>
+        <meta charset="UTF-8">
+        <title>AngularJS Circular Progress Demo</title>
+        <style>
+        body {
+			background-color: #101214;
+		}
+		h2 {
+			color: #8B8B8B;
+		}
+		div.tile {
+			display: block;
+			margin : 2px;
+			padding : 2px;
+			clear: none;
+			background-color: #313131;
+		}
+		div.tile h3 {
+			background-color: #272727;
+			color: #8B8B8B;
+			font: 'Arial';
+			font-weight: bold;
+		}
+        </style>
+
+		<link rel="stylesheet" href="bower_components/angular-chart.js/dist/angular-chart.css">
+		<script src="bower_components/angular/angular.min.js"></script>
+		<script src="bower_components/Chart.js/Chart.js"></script>
+		<script src="bower_components/angular-chart.js/dist/angular-chart.js"></script>
+        <script src="bower_components/angular-circular-progress/dist/circularProgress.min.js"></script>
+        <script>
+            angular
+                .module('circularProgressDemo', ['angular-circular-progress'])
+                .controller('TimerCtrl', function($timeout) {
+                    var vm = this,
+                        timeout;
+                    vm.value = 0;
+                    vm.max = 60;
+                    vm.animation = "linearEase";
+                    vm.iterations = 60; // Accelerate animation to fit the 1 second timeout function
+                    vm.label = "";
+                    vm.start = function() {
+                        vm.label = vm.value + "s";
+                        timeout = $timeout(function() {
+                            vm.value++;
+                            if(vm.value > vm.max) {
+                                vm.value = 0;
+                            }
+                            vm.start();
+                        }, 1000);
+                    };
+                    vm.start();
+                });
+        </script>
+    </head>
+
+    <body ng-controller="TimerCtrl as timer">
+        <h2>OSV Dashboard</h2>
+        <div class="tile">
+			<h3>SOC</h3>
+            <!--circular-progress
+                value="50"
+                max="120"
+                orientation="1"
+                radius="80"
+                stroke="20"
+                base-color="#803690"
+                progress-color="#00ADF9"
+                iterations="100"
+                animation="easeInOutCubic"
+                label="{{}}"
+            ></circular-progress-->
+
+            <!-- Note that value and max MUST NOT use the {{ }} notation -->
+            <circular-progress
+                value="timer.value"
+                max="timer.max"
+                base-color="#803690"
+                progress-color="#00ADF9"
+                iterations="{{timer.iterations}}"
+                animation="{{timer.animation}}"
+                label="{{timer.label}}"
+            ></circular-progress>
+        </div>
+        <div class="tile">
+			<img src="camposv.png"/>
+        </div>
+        <div class="tile">
+			<h3>Speed</h3>
+            <!--circular-progress
+                value="50"
+                max="120"
+                orientation="1"
+                radius="80"
+                stroke="20"
+                base-color="#803690"
+                progress-color="#00ADF9"
+                iterations="100"
+                animation="easeInOutCubic"
+                label="{{}}"
+            ></circular-progress-->
+
+            <!-- Note that value and max MUST NOT use the {{ }} notation -->
+            <circular-progress
+                value="timer.value"
+                max="timer.max"
+                base-color="#803690"
+                progress-color="#00ADF9"
+                iterations="{{timer.iterations}}"
+                animation="{{timer.animation}}"
+                label="{{timer.label}}"
+            ></circular-progress>
+        </div>
+    </body>
+</html>
