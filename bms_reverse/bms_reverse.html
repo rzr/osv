@@ -153,6 +153,52 @@ We identified 2 interfaces on the BMS
 	</tr>
 </table>
 <h2>CAN Bus</h2>
-TODO
+<p>
+	After disassembling the BMS, we identified the CAN Transceiver: it is a <a href="https://www.sparkfun.com/datasheets/DevTools/Arduino/MCP2551.pdf">MCP 2551</a>.
+	<br/>
+	So the speed of the bus is 250 kbit/sec (High Speed Can).
+	<br/>
+	The Can Identifier is 0x186.
+	<br/>
+	Some captures on the CAN bus were done during the OSV Camp and are available <a hre="raw_CAN_BMS.log">here</a> and <a hre="raw_CAN_BMS_2.log">here</a> and <a hre="raw_CAN_BMS_3.log">here</a>.
+	<br/>
+	<p>Example</p>
+	<pre>
+0:0:8:7283 Rx 1 186 s 8 70 DE 00 00 3B 00 00 02 
+0:0:9:2515 Rx 1 186 s 8 80 DE 00 00 3B 00 00 05 
+0:0:9:7747 Rx 1 186 s 8 80 DE 00 00 3B 00 00 05 
+	</pre>
+	<p>
+	We managed to understand some parts of the message.
+	Let's take the 70 DE 00 00 3B 00 00 02 message as example.
+	<table border="1">
+		<tr>
+			<td>
+				Byte 5
+				<br/>
+				70 DE 00 00 <b>3B</b> 00 00 02
+			</td>
+			<td>
+				The State of Charge. (Max : 64)
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Last byte 
+				<br/>
+				70 DE 00 00 3B 00 00 <b>02</b>
+			</td>
+			<td>
+				State of the power supply cable 
+				<ul>
+					<li>02: Not plugged</li>
+					<li>05: In charge</li>
+				</ul>
+			</td>
+		</tr>
+	</table>
+	</p>
+</p>
+TODO: still need some investigations! :)
 </body>
 </html>
