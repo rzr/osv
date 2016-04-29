@@ -1,0 +1,20 @@
+/*
+  module resource file
+
+  Author(s):    Udo Eberhardt
+  Company:      Thesycon GmbH
+*/
+
+#ifdef APSTUDIO_INVOKED
+#error This file is not editable by Microsoft Visual C++, use a text editor.
+#endif
+
+// local version defs
+#include "version.h"
+
+// include common definition of version resource
+#include "CommonVersion.inc"
+
+
+
+/*************************** EOF **************************************/
