@@ -1,0 +1,152 @@
+<html>
+<head>
+	<title>OSV BMS Reverse Communication Protocol Reverse Engineering</title>
+</head>
+<body>
+<h1>Reverse Engineering of the BMS Communication Protocols</h1>
+<p>
+We identified 2 interfaces on the BMS
+<ol>
+	<li>Serial over Usb</li>
+	<li>CAN Bus</li>
+</ol>
+</p>
+<h2>Serial over Usb</h2>
+<p>
+	The BMS originaly mounted on the OSV sent data as sequence of ascii chars.
+	<br/>
+	Each line represents a piece of information.
+	<br/>
+	Each line is 5 digits long (ABCDE).
+	<br/>
+	The 2 first numbers of the line identified the information sent
+	<br/>
+	You can access <a href="raw_serial.txt">a sample of a capture</a> done on the osv during the osvcamp.
+</p>
+<p>Example</p>
+<pre>
+		01671
+		02671
+		03673
+		04671
+		05668
+		06670
+		07668
+		08672
+		09671
+		10671
+		11672
+		12668
+</pre>
+<table border="1">
+	<tr><th>AB - 2 first digits</th><th>Description</th><th>Sample</th></tr>
+	<tr>
+		<td>01 .. 24</td>
+		<td>
+			Voltage of the 24 cells of the battry. 
+			To obtain the voltage (in Volts) you have to divide the last 3 chars of the line by 200.
+		</td>
+		<td>
+			<pre>
+01671: 01 671 -> cell 1: 671 / 200 = 3.355 V
+02671: 02 671 -> cell 1: 671 / 200 = 3.355 V
+03673: 03 673 -> cell 1: 673 / 200 = 3.365 V
+04671: 04 671 -> cell 1: 671 / 200 = 3.355 V
+05668: 05 668 -> cell 1: 668 / 200 = 3.34 V
+06670: 06 670 -> cell 1: 671 / 200 = 3.35 V
+07668: 07 668 -> cell 1: 671 / 200 = 3.34 V
+08672: 08 672 -> cell 1: 671 / 200 = 3.36 V
+09671: 09 671 -> cell 1: 671 / 200 = 3.355 V
+10671: 10 671 -> cell 1: 671 / 200 = 3.355 V
+11672: 11 672 -> cell 1: 671 / 200 = 3.36 V
+12668: 12 668 -> cell 1: 671 / 200 = 3.34 V
+			</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>74</td>
+		<td>
+			Temperature of the 4 sensors (3 for the batteries pack, 1 for the BMS)
+			<p>
+				The next (3rd) digit indicates the id of the sensor : 
+				<ul>
+					<li>0 .. 2 are the 3 batteries (TODO: which one is the front, rear, ...?). </li>
+					<li>The last (3) is the BMS itself.</li>
+				</ul>
+			</p>
+			<p>
+				The 2 last digits (4 and 5) indicates the temperature of the sensor in celsius degre.
+				<br/>
+				99 indicates that the sensor is not connected.
+			</p>
+		</td>
+		<td>
+			<pre>
+74015: 74 0 15 -> Temp. Sonde 0: 15 &deg; C
+74115: 74 1 15 -> Temp. Sonde 0: 15 &deg; C
+74299: 74 2 99 -> Temp. Sonde 0: Not connected
+74399: 74 3 99 -> Temp. Sonde 0: Not connected
+			</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>84</td>
+		<td>
+			Voltage of the full battery
+		</td>
+		<td>
+			<pre>
+84399: 84 399 -> Voltage of Battery 3.99 V
+			</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>94</td>
+		<td>
+		<p>State of Charge for cells</p>
+		<p>If the next digit (3rd) is </p>
+		<ul>
+			<li>0, then the 2 last digits are the pourcentage of charge of the battery</li>
+			<pre>
+			94086: 94 0 86 -> SOC for battery: 86%
+			</pre>
+			<li>
+				3, then the 2 last digits are the PWM (Pulse Width Modulation) 
+				sent to the Battery Charger.
+				<br/>
+				This information is sent to the charger through cable 1.
+			</li>
+			<p>
+				<ul>
+					<li>05 means no charge needed</li>
+				</ul> 
+			</p>
+		</ul>
+		</td>
+		<td>
+			<pre>
+94305: 94 3 05 -> PWM : 5%, meaning no charge necessary
+			</pre>
+		</td>
+	</tr>
+	<tr>
+		<td>99</td>
+		<td>
+			<p>PWM sent to engine controller through cable 3</p>
+			<p>
+				The third digit is alwyas 0.
+				The 2 last digits (4 and 5) indicates the PWM in pourcentage sent to the Engin Controller.
+				<br/>
+			</p>
+		</td>
+		<td>
+		<pre>
+99095: 99 0 95 -> 95%: you can accelerate 
+		</pre>
+		</td>
+	</tr>
+</table>
+<h2>CAN Bus</h2>
+TODO
+</body>
+</html>
