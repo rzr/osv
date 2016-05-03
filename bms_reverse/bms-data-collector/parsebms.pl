@@ -1,3 +1,11 @@
+
+=head1 NAME
+
+parsebms.pl - This script is a previous version of osv-bms-main.pl.
+For details see osv-bms-main.pl.
+
+=cut
+
 use strict;
 use warnings;
 use LWP::UserAgent;
