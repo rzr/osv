@@ -1,5 +1,8 @@
-<html>
+<!DOCTYPE html>
+<!-- PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" -->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
+	<meta charset="utf-8" />
 	<title>OSV BMS Reverse Communication Protocol Reverse Engineering</title>
 </head>
 <body>
@@ -23,7 +26,22 @@ We identified 2 interfaces on the BMS
 	<br/>
 	You can access <a href="raw_serial.txt">a sample of a capture</a> done on the osv during the osvcamp.
 </p>
-<p>Example</p>
+<p>
+	The serial communication with the BMS uses a standard set of parameters:
+	<ul>
+		<li>9600: speed (baudrate of the serial line) ;</li>
+		<li>8 data bits ;</li>
+		<li>no parity check ;</li>
+		<li>1 stop bit.</li>
+	</ul>
+</p>
+
+<p>
+	To start getting the information from the BMS, an initialization sequence is required. It is "01" (ASCII: 0x30 0x31).
+	Then, the BMS start sending its information continuously.
+</p>
+
+<p>Example output from the BMS</p>
 <pre>
 		01671
 		02671
@@ -82,21 +100,24 @@ We identified 2 interfaces on the BMS
 		</td>
 		<td>
 			<pre>
-74015: 74 0 15 -> Temp. Sonde 0: 15 &deg; C
-74115: 74 1 15 -> Temp. Sonde 0: 15 &deg; C
-74299: 74 2 99 -> Temp. Sonde 0: Not connected
-74399: 74 3 99 -> Temp. Sonde 0: Not connected
+74015: 74 0 15 -> Temp. Sensor 0: 15 &deg; C
+74115: 74 1 15 -> Temp. Sensor 1: 15 &deg; C
+74299: 74 2 99 -> Temp. Sensor 2: Not connected
+74399: 74 3 99 -> Temp. Sensor 3: Not connected
 			</pre>
 		</td>
 	</tr>
 	<tr>
 		<td>84</td>
 		<td>
-			Voltage of the full battery
+			Current going out of the battery. The actual value in amperes is:
+			<pre>A * value + B    Amperes</pre>
+			Where A is a factor not identified today (probably between 1 and 1/3), and B = -400.
+			So, when neither the battery is being charged, nor the vehicle being used, value is 400.
 		</td>
 		<td>
 			<pre>
-84399: 84 399 -> Voltage of Battery 3.99 V
+84399: 84 399 -> 399 means no current is going in or out of the battery.
 			</pre>
 		</td>
 	</tr>
@@ -147,7 +168,7 @@ We identified 2 interfaces on the BMS
 		</td>
 		<td>
 		<pre>
-99095: 99 0 95 -> 95%: you can accelerate 
+99095: 99 0 95 -> 95%: max possible current can be drawn by engine controller
 		</pre>
 		</td>
 	</tr>
